@@ -22,24 +22,40 @@ class CheerManager : ObservableObject {
     var mascotImageName : String {
         switch cheerState {
         case .initial:
-            cheers.initialCheer.imageName
+            return cheers.initialCheer.imageName
         case .firstRoundFirstCheer:
-            cheers.firstRound.firstCheer.imageName
+            return cheers.firstRound.firstCheer.imageName
         case .firstRoundSecondCheer:
-            <#code#>
+            return cheers.firstRound.secondCheer.imageName
         case .secondRoundFirstCheer:
-            <#code#>
+            return cheers.secondRound.firstCheer.imageName
         case .secondRoundSecondCheer:
-            <#code#>
+            return cheers.secondRound.secondCheer.imageName
         }
     }
-    var firstCheerText = "We Are"
-    var secondCheerText = "Penn State"
+    var cheerText : String {
+        switch cheerState {
+        case .initial:
+            return cheers.initialCheer.title
+        case .firstRoundFirstCheer:
+            return cheers.firstRound.firstCheer.title
+        case .firstRoundSecondCheer:
+            return cheers.firstRound.secondCheer.title
+        case .secondRoundFirstCheer:
+            return cheers.secondRound.firstCheer.title
+        case .secondRoundSecondCheer:
+            return cheers.secondRound.secondCheer.title
+
+        }
+    }
+
     
-    var shouldShowFirstCheer : Bool { cheerCount % 2 == 1 }
-    var shouldShowSecondCheer : Bool  { cheerCount != 0 && cheerCount % 2 == 0  }
+    var shouldShowFirstCheer : Bool {
+        [.firstRoundFirstCheer, .secondRoundFirstCheer].contains(cheerState)
+    }
+    var shouldShowSecondCheer : Bool  { [.firstRoundSecondCheer, .secondRoundSecondCheer].contains(cheerState) }
     
-    private var inFirstRound : Bool {cheerCount <= cheers.firstRoundCount*2}
+    private var inFirstRound : Bool {cheerCount > 0 && cheerCount <= cheers.firstRoundCount*2}
     private var oddCheer : Bool {cheerCount > 0 && cheerCount % 2 == 1}
     
     @Published var cheerCount = 0 {
