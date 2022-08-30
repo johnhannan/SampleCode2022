@@ -10,15 +10,31 @@ import Foundation
 class CheerManager : ObservableObject {
     
 
-
+    // The model
     let cheers : Cheering = PSUCheer()
     
     enum CheerState {
         case initial, firstRoundFirstCheer, firstRoundSecondCheer, secondRoundFirstCheer, secondRoundSecondCheer
     }
-    
     var cheerState : CheerState = .initial
     
+    // changes in cheerCount updated in cheerState
+    @Published var cheerCount = 0 {
+        didSet {
+            if cheerCount == 0 {
+                cheerState = .initial
+            } else if  inFirstRound {
+                cheerState = oddCheer ? .firstRoundFirstCheer : .firstRoundSecondCheer
+            } else { // secondRound
+                cheerState = oddCheer ? .secondRoundFirstCheer : .secondRoundSecondCheer
+            }
+        }
+    }
+}
+
+
+// computed properties
+extension CheerManager {
     var mascotImageName : String {
         switch cheerState {
         case .initial:
@@ -48,30 +64,21 @@ class CheerManager : ObservableObject {
 
         }
     }
-
     
     var shouldShowFirstCheer : Bool {
         [.firstRoundFirstCheer, .secondRoundFirstCheer].contains(cheerState)
     }
     var shouldShowSecondCheer : Bool  { [.firstRoundSecondCheer, .secondRoundSecondCheer].contains(cheerState) }
     
+    //private -- needed just for the computed properties above
     private var inFirstRound : Bool {cheerCount > 0 && cheerCount <= cheers.firstRoundCount*2}
     private var oddCheer : Bool {cheerCount > 0 && cheerCount % 2 == 1}
-    
-    @Published var cheerCount = 0 {
-        didSet {
-            if cheerCount == 0 {
-                cheerState = .initial
-            } else if  inFirstRound {
-                cheerState = oddCheer ? .firstRoundFirstCheer : .firstRoundSecondCheer
-            } else { // secondRound
-                cheerState = oddCheer ? .secondRoundFirstCheer : .secondRoundSecondCheer
-            }
-        }
-    }
-    
+}
+
+
+// intents
+extension CheerManager {
     func doACheer() {
         cheerCount = (cheerCount + 1) % cheers.totalCheers
-        
     }
 }
