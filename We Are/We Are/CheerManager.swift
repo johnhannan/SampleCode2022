@@ -12,58 +12,51 @@ class CheerManager : ObservableObject {
 
     // The model
     let cheers : Cheering = PSUCheer()
+    // changes in cheerCount updated in cheerState
+    @Published var cheerCount = 0
+    
     
     enum CheerState {
         case initial, firstRoundFirstCheer, firstRoundSecondCheer, secondRoundFirstCheer, secondRoundSecondCheer
     }
-    var cheerState : CheerState = .initial
-    
-    // changes in cheerCount updated in cheerState
-    @Published var cheerCount = 0 {
-        didSet {
-            if cheerCount == 0 {
-                cheerState = .initial
-            } else if  inFirstRound {
-                cheerState = oddCheer ? .firstRoundFirstCheer : .firstRoundSecondCheer
-            } else { // secondRound
-                cheerState = oddCheer ? .secondRoundFirstCheer : .secondRoundSecondCheer
-            }
+    private var cheerState : CheerState {
+        if cheerCount == 0 {
+            return .initial
+        } else if  inFirstRound {
+            return oddCheer ? .firstRoundFirstCheer : .firstRoundSecondCheer
+        } else { // secondRound
+            return oddCheer ? .secondRoundFirstCheer : .secondRoundSecondCheer
         }
     }
+    
+
 }
 
 
 // computed properties
 extension CheerManager {
     var mascotImageName : String {
-        switch cheerState {
-        case .initial:
-            return cheers.initialCheer.imageName
-        case .firstRoundFirstCheer:
-            return cheers.firstRound.firstCheer.imageName
-        case .firstRoundSecondCheer:
-            return cheers.firstRound.secondCheer.imageName
-        case .secondRoundFirstCheer:
-            return cheers.secondRound.firstCheer.imageName
-        case .secondRoundSecondCheer:
-            return cheers.secondRound.secondCheer.imageName
-        }
+        currentCheer.imageName
     }
     var cheerText : String {
+        currentCheer.title
+    }
+    
+    private var currentCheer : OneCheer {
         switch cheerState {
         case .initial:
-            return cheers.initialCheer.title
+            return cheers.initialCheer
         case .firstRoundFirstCheer:
-            return cheers.firstRound.firstCheer.title
+            return cheers.firstRound.firstCheer
         case .firstRoundSecondCheer:
-            return cheers.firstRound.secondCheer.title
+            return cheers.firstRound.secondCheer
         case .secondRoundFirstCheer:
-            return cheers.secondRound.firstCheer.title
+            return cheers.secondRound.firstCheer
         case .secondRoundSecondCheer:
-            return cheers.secondRound.secondCheer.title
-
+            return cheers.secondRound.secondCheer
         }
     }
+
     
     var shouldShowFirstCheer : Bool {
         [.firstRoundFirstCheer, .secondRoundFirstCheer].contains(cheerState)
@@ -76,7 +69,7 @@ extension CheerManager {
 }
 
 
-// intents
+//intents
 extension CheerManager {
     func doACheer() {
         cheerCount = (cheerCount + 1) % cheers.totalCheers

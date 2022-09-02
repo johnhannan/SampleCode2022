@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct WeAreView: View {
-    @ObservedObject var cheerManager = CheerManager()
+    @EnvironmentObject var cheerManager : CheerManager
     var body: some View {
         ZStack {
             Color.orange

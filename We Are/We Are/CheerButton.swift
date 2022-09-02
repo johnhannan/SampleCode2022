@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct CheerButton: View {
+    @EnvironmentObject var cheerManager : CheerManager
+
     var action : () -> Void
     var body: some View {
         Button(action: action) {
